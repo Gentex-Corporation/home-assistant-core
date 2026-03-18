@@ -1,0 +1,54 @@
+"""The homelink integration."""
+
+from __future__ import annotations
+
+from aiohttp import ClientResponseError
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP, Platform
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers import aiohttp_client, config_entry_oauth2_flow
+
+from . import oauth2
+from .const import DOMAIN
+
+type PlaceConfigEntry = ConfigEntry
+
+PLATFORMS: list[Platform] = [Platform.EVENT]
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: PlaceConfigEntry) -> bool:
+    """Set up gentex place from a config entry."""
+    auth_implementation = oauth2.SRPAuthImplementation(hass, DOMAIN)
+    try:
+        await auth_implementation.async_refresh_token(entry.data["token"])
+    except ClientResponseError as err:
+        raise ConfigEntryAuthFailed(err) from err
+
+    config_entry_oauth2_flow.async_register_implementation(
+        hass, DOMAIN, auth_implementation
+    )
+
+    implementation = (
+        await config_entry_oauth2_flow.async_get_config_entry_implementation(
+            hass, entry
+        )
+    )
+
+    session = config_entry_oauth2_flow.OAuth2Session(hass, entry, implementation)
+    authenticated_session = oauth2.AsyncConfigEntryAuth(
+        aiohttp_client.async_get_clientsession(hass), session
+    )
+
+    # Setup platform
+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: PlaceConfigEntry) -> bool:
+    """Unload a config entry."""
+    await entry.runtime_data.async_on_unload(None)
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
