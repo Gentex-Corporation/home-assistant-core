@@ -1,4 +1,4 @@
-"""application_credentials platform for the gentex homelink integration."""
+"""application_credentials platform for the gentex place integration."""
 
 from homeassistant.components.application_credentials import ClientCredential
 from homeassistant.core import HomeAssistant
