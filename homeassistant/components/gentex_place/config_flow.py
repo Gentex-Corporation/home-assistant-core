@@ -1,12 +1,13 @@
-"""Config flow for homelink."""
+"""Config flow for place."""
 
 from collections.abc import Mapping
+import functools
 import logging
 from typing import Any
 
 import botocore.exceptions
-from homelink.auth.srp_auth import SRPAuth
 import jwt
+from place.auth import login
 import voluptuous as vol
 
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigFlowResult
@@ -40,15 +41,20 @@ class SRPFlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):
         """Ask for username and password."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            srp_auth = SRPAuth()
             try:
-                tokens = await self.hass.async_add_executor_job(
-                    srp_auth.async_get_access_token,
-                    user_input[CONF_EMAIL],
-                    user_input[CONF_PASSWORD],
+                get_tokens = functools.partial(
+                    login,
+                    username=user_input[CONF_EMAIL],
+                    password=user_input[CONF_PASSWORD],
                 )
-            except botocore.exceptions.ClientError:
+                tokens = await self.hass.async_add_executor_job(
+                    get_tokens,
+                )
+                _LOGGER.info(tokens)
+            except botocore.exceptions.ClientError as err:
+                _LOGGER.error("Failed to get tokens: %s", err)
                 errors["base"] = "srp_auth_failed"
+                raise
             except Exception:
                 _LOGGER.exception("An unexpected error occurred")
                 errors["base"] = "unknown"
@@ -96,9 +102,7 @@ class SRPFlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):
     async def async_oauth_create_entry(self, data: dict) -> ConfigFlowResult:
         """Create an oauth config entry or update existing entry for reauth."""
         await self.async_set_unique_id(self.external_data[CONF_UNIQUE_ID])
-        entry_title = self.context.get("title_placeholders", {"name": "HomeLink"})[
-            "name"
-        ]
+        entry_title = self.context.get("title_placeholders", {"name": "Place"})["name"]
         if self.source == SOURCE_REAUTH:
             self._abort_if_unique_id_mismatch()
             return self.async_update_reload_and_abort(

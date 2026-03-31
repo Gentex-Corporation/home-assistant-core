@@ -589,6 +589,8 @@ build.json @home-assistant/supervisor
 /tests/components/geniushub/ @manzanotti
 /homeassistant/components/gentex_homelink/ @niaexa @ryanjones-gentex
 /tests/components/gentex_homelink/ @niaexa @ryanjones-gentex
+/homeassistant/components/gentex_place/ @niaexa
+/tests/components/gentex_place/ @niaexa
 /homeassistant/components/geo_json_events/ @exxamalte
 /tests/components/geo_json_events/ @exxamalte
 /homeassistant/components/geo_location/ @home-assistant/core

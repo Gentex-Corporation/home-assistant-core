@@ -1,14 +1,11 @@
 {
   "domain": "gentex_place",
-  "name": "gentex_place",
+  "name": "Place",
   "codeowners": ["@niaexa"],
   "config_flow": true,
   "dependencies": ["application_credentials"],
   "documentation": "https://www.home-assistant.io/integrations/gentex_place",
-  "homekit": {},
   "iot_class": "cloud_push",
   "quality_scale": "bronze",
-  "requirements": [],
-  "ssdp": [],
-  "zeroconf": []
+  "requirements": []
 }

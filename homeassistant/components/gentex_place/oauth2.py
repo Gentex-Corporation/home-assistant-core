@@ -1,13 +1,11 @@
 """API for homelink bound to Home Assistant OAuth."""
 
-from json import JSONDecodeError
 import logging
 import time
 from typing import cast
 
-from aiohttp import ClientError, ClientSession
-from homelink.auth.abstract_auth import AbstractAuth
-from homelink.settings import COGNITO_CLIENT_ID
+from aiohttp import ClientSession
+from place.auth.abstract_auth import AbstractAuth
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_entry_oauth2_flow
@@ -16,6 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import OAUTH2_TOKEN_URL
 
 _LOGGER = logging.getLogger(__name__)
+COGNITO_CLIENT_ID = "5tuofl4e9rhtuor33dlau9jnp6"
 
 
 class SRPAuthImplementation(config_entry_oauth2_flow.AbstractOAuth2Implementation):
@@ -44,13 +43,14 @@ class SRPAuthImplementation(config_entry_oauth2_flow.AbstractOAuth2Implementatio
 
     async def async_resolve_external_data(self, external_data) -> dict:
         """Format the token from the source appropriately for HomeAssistant."""
-        tokens = external_data["tokens"]
+        auth_result = external_data["tokens"]["AuthenticationResult"]
         return {
-            "access_token": tokens["AuthenticationResult"]["AccessToken"],
-            "refresh_token": tokens["AuthenticationResult"]["RefreshToken"],
-            "token_type": tokens["AuthenticationResult"]["TokenType"],
-            "expires_in": tokens["AuthenticationResult"]["ExpiresIn"],
-            "expires_at": (time.time() + tokens["AuthenticationResult"]["ExpiresIn"]),
+            "access_token": auth_result["AccessToken"],
+            "refresh_token": auth_result["RefreshToken"],
+            "token_type": auth_result["TokenType"],
+            "expires_in": auth_result["ExpiresIn"],
+            "expires_at": time.time() + auth_result["ExpiresIn"],
+            "id_token": auth_result["IdToken"],
         }
 
     async def _token_request(self, data: dict) -> dict:
@@ -61,21 +61,6 @@ class SRPAuthImplementation(config_entry_oauth2_flow.AbstractOAuth2Implementatio
 
         _LOGGER.debug("Sending token request to %s", OAUTH2_TOKEN_URL)
         resp = await session.post(OAUTH2_TOKEN_URL, data=data)
-        if resp.status >= 400:
-            try:
-                error_response = await resp.json()
-            except ClientError, JSONDecodeError:
-                error_response = {}
-                error_code = error_response.get("error", "unknown")
-                error_description = error_response.get(
-                    "error_description", "unknown error"
-                )
-                _LOGGER.error(
-                    "Token request for %s failed (%s): %s",
-                    self.domain,
-                    error_code,
-                    error_description,
-                )
         resp.raise_for_status()
         return cast(dict, await resp.json())
 
