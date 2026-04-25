@@ -1,4 +1,4 @@
-"""API for homelink bound to Home Assistant OAuth."""
+"""API for place bound to Home Assistant OAuth."""
 
 import logging
 import time
@@ -6,15 +6,13 @@ from typing import cast
 
 from aiohttp import ClientSession
 from place.auth.abstract_auth import AbstractAuth
+from place.config import COGNITO_CLIENT_ID, OAUTH2_TOKEN_URL
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import OAUTH2_TOKEN_URL
-
 _LOGGER = logging.getLogger(__name__)
-COGNITO_CLIENT_ID = "5tuofl4e9rhtuor33dlau9jnp6"
 
 
 class SRPAuthImplementation(config_entry_oauth2_flow.AbstractOAuth2Implementation):
@@ -77,14 +75,14 @@ class SRPAuthImplementation(config_entry_oauth2_flow.AbstractOAuth2Implementatio
 
 
 class AsyncConfigEntryAuth(AbstractAuth):
-    """Provide homelink authentication tied to an OAuth2 based config entry."""
+    """Provide place authentication tied to an OAuth2 based config entry."""
 
     def __init__(
         self,
         websession: ClientSession,
         oauth_session: config_entry_oauth2_flow.OAuth2Session,
     ) -> None:
-        """Initialize homelink auth."""
+        """Initialize place auth."""
         super().__init__(websession)
         self._oauth_session = oauth_session
 

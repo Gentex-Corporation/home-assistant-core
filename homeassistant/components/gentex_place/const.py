@@ -3,7 +3,6 @@
 from enum import IntEnum
 
 DOMAIN = "gentex_place"
-OAUTH2_TOKEN_URL = "https://connectedsmoke-sandbox-94e5744a-af6f-443b-bf23-d595e70c0a0c.auth.us-east-2.amazoncognito.com/oauth2/token"
 
 
 class AlarmStatus(IntEnum):

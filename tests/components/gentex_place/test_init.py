@@ -3,6 +3,7 @@
 from http import HTTPStatus
 from unittest.mock import AsyncMock, MagicMock
 
+from place.config import OAUTH2_TOKEN_URL
 import pytest
 
 from homeassistant.config_entries import ConfigEntryState
@@ -85,7 +86,7 @@ async def test_setup_auth_failure(
 ) -> None:
     """Test that a token refresh failure raises ConfigEntryAuthFailed."""
     aioclient_mock.post(
-        "https://connectedsmoke-sandbox-94e5744a-af6f-443b-bf23-d595e70c0a0c.auth.us-east-2.amazoncognito.com/oauth2/token",
+        OAUTH2_TOKEN_URL,
         status=HTTPStatus.UNAUTHORIZED,
     )
 
