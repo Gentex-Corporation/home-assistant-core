@@ -4,11 +4,12 @@ from collections.abc import Generator
 from http import HTTPStatus
 from unittest.mock import AsyncMock, MagicMock, patch
 
+from place.config import OAUTH2_TOKEN_URL
 from place.models import Credentials
 from place.models.discover_device import DiscoverDevice
 import pytest
 
-from homeassistant.components.gentex_place.const import DOMAIN, OAUTH2_TOKEN_URL
+from homeassistant.components.gentex_place.const import DOMAIN
 
 from . import TEST_ACCESS_JWT, TEST_UNIQUE_ID
 
