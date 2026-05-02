@@ -88,11 +88,14 @@ class PlaceAlarmSensorEntity(SensorEntity):
         """Initialize the sensor."""
         self.coordinator = coordinator
         self._thing_name: str = device.thing_name
+        self._device_identifier: str = (
+            device.location or device.device_name or device.device_id
+        )
         self.entity_description = description
-        self._attr_unique_id = f"{self._thing_name}_{description.key}"
+        self._attr_unique_id = f"{self._device_identifier}_{description.key}"
         self._attr_device_info = {
-            "identifiers": {("gentex_place", self._thing_name)},
-            "name": getattr(device, "device_name", None) or self._thing_name,
+            "identifiers": {("gentex_place", self._device_identifier)},
+            "name": self._device_identifier,
             "manufacturer": "Gentex",
             "model": getattr(device, "model_number", None),
             "sw_version": getattr(device, "firmware_version", None),
