@@ -23,9 +23,9 @@ async def test_sensor_entities_created(
     """Test that alarm sensor entities are created for each device."""
     await setup_integration(hass, mock_config_entry)
 
-    co = hass.states.get("sensor.test_detector_co_alarm")
-    heat = hass.states.get("sensor.test_detector_heat_alarm")
-    smoke = hass.states.get("sensor.test_detector_smoke_alarm")
+    co = hass.states.get("sensor.master_bedroom_co_alarm")
+    heat = hass.states.get("sensor.master_bedroom_heat_alarm")
+    smoke = hass.states.get("sensor.master_bedroom_smoke_alarm")
 
     assert co is not None
     assert heat is not None
@@ -43,9 +43,9 @@ async def test_sensor_initial_state(
     """Test sensor values reflect initial shadow state from discovery."""
     await setup_integration(hass, mock_config_entry)
 
-    co = hass.states.get("sensor.test_detector_co_alarm")
-    heat = hass.states.get("sensor.test_detector_heat_alarm")
-    smoke = hass.states.get("sensor.test_detector_smoke_alarm")
+    co = hass.states.get("sensor.master_bedroom_co_alarm")
+    heat = hass.states.get("sensor.master_bedroom_heat_alarm")
+    smoke = hass.states.get("sensor.master_bedroom_smoke_alarm")
 
     assert co.state == "idle"
     assert heat.state == "idle"
@@ -63,7 +63,7 @@ async def test_sensor_updates_on_shadow_push(
     """Test sensor values update when an MQTT shadow message arrives."""
     await setup_integration(hass, mock_config_entry)
 
-    assert hass.states.get("sensor.test_detector_co_alarm").state == "idle"
+    assert hass.states.get("sensor.master_bedroom_co_alarm").state == "idle"
 
     payload = json.dumps(
         {"state": {"reported": {"coAlarmStatus": 3, "smokeAlarmStatus": 5}}}
@@ -75,10 +75,10 @@ async def test_sensor_updates_on_shadow_push(
     )
     await hass.async_block_till_done()
 
-    assert hass.states.get("sensor.test_detector_co_alarm").state == "alarm"
-    assert hass.states.get("sensor.test_detector_smoke_alarm").state == "hushed"
+    assert hass.states.get("sensor.master_bedroom_co_alarm").state == "alarm"
+    assert hass.states.get("sensor.master_bedroom_smoke_alarm").state == "hushed"
     # Heat unchanged
-    assert hass.states.get("sensor.test_detector_heat_alarm").state == "idle"
+    assert hass.states.get("sensor.master_bedroom_heat_alarm").state == "idle"
 
 
 @pytest.mark.usefixtures("aioclient_mock_fixture")
@@ -100,7 +100,7 @@ async def test_sensor_unknown_device_returns_unknown(
     coordinator._async_notify_listeners()
     await hass.async_block_till_done()
 
-    state = hass.states.get("sensor.test_detector_co_alarm")
+    state = hass.states.get("sensor.master_bedroom_co_alarm")
     assert state.state == "unknown"
 
 
@@ -134,7 +134,7 @@ async def test_sensor_all_alarm_states(
         )
         await hass.async_block_till_done()
 
-        state = hass.states.get("sensor.test_detector_co_alarm")
+        state = hass.states.get("sensor.master_bedroom_co_alarm")
         assert state.state == expected, (
             f"Expected {expected} for value {value}, got {state.state}"
         )

@@ -70,23 +70,14 @@ def mock_provider(mock_discover_device: DiscoverDevice) -> Generator[AsyncMock]:
 def mock_discover_device() -> DiscoverDevice:
     """Mock DiscoverDevice instance."""
     return DiscoverDevice(
-        updated_by=None,
-        activated_at=None,
-        updated_at=None,
-        location=[],
-        entity_type="detector",
-        status="active",
-        created_by=None,
-        household_id="household-1",
+        location="Master Bedroom",
         shadow=MOCK_SHADOW,
         device_name="Test Detector",
         thing_name="thing-001",
         firmware_version="1.0.0",
-        created_at=None,
         model_number="MODEL-X",
         device_id="device-001",
         online=True,
-        warranty_registration=False,
     )
 
 
