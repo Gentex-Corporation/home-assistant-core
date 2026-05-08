@@ -86,7 +86,7 @@ class PlaceCoordinator:
         else:
             self.shadows[thing_name] = PlaceDeviceShadow.from_shadow(payload)
 
-        _LOGGER.debug("Shadow update for %s: %s", thing_name, thing_name)
+        _LOGGER.debug("Shadow update for %s: %s", thing_name, payload)
 
         self.hass.loop.call_soon_threadsafe(self._async_notify_listeners)
 
