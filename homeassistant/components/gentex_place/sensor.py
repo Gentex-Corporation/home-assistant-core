@@ -13,6 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import AlarmStatus
@@ -93,13 +94,13 @@ class PlaceAlarmSensorEntity(SensorEntity):
         )
         self.entity_description = description
         self._attr_unique_id = f"{self._device_identifier}_{description.key}"
-        self._attr_device_info = {
-            "identifiers": {("gentex_place", self._device_identifier)},
-            "name": self._device_identifier,
-            "manufacturer": "Gentex",
-            "model": getattr(device, "model_number", None),
-            "sw_version": getattr(device, "firmware_version", None),
-        }
+        self._attr_device_info = DeviceInfo(
+            identifiers={("gentex_place", self._device_identifier)},
+            name=self._device_identifier,
+            manufacturer="Gentex",
+            model=getattr(device, "model_number", None),
+            sw_version=getattr(device, "firmware_version", None),
+        )
 
     @property
     def native_value(self) -> str | None:
