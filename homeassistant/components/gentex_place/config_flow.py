@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SRPFlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):
-    """Config flow to handle homelink OAuth2 authentication."""
+    """Config flow to handle place OAuth2 authentication."""
 
     DOMAIN = DOMAIN
 
@@ -50,11 +50,9 @@ class SRPFlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):
                 tokens = await self.hass.async_add_executor_job(
                     get_tokens,
                 )
-                _LOGGER.info(tokens)
             except botocore.exceptions.ClientError as err:
                 _LOGGER.error("Failed to get tokens: %s", err)
                 errors["base"] = "srp_auth_failed"
-                raise
             except Exception:
                 _LOGGER.exception("An unexpected error occurred")
                 errors["base"] = "unknown"
