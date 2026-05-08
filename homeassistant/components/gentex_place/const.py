@@ -6,7 +6,7 @@ DOMAIN = "gentex_place"
 
 
 class AlarmStatus(IntEnum):
-    """Alarm status values from device shadow."""
+    """Alarm status values."""
 
     IDLE = 0
     TEST = 1
